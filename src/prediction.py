@@ -6,8 +6,8 @@ from datetime import datetime, timedelta
 import requests
 from io import StringIO
 
-from src.model_training import load_model, create_features
-from src.database import WeatherDB
+from model.model_train import load_model, create_features
+from db import WeatherDB
 
 logging.basicConfig(
     filename='logs/prediction.log',

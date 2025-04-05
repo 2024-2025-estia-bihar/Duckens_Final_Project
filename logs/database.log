@@ -4,3 +4,9 @@
 2025-04-05 07:30:15,772 - INFO - Tables créées avec succès
 2025-04-05 07:30:53,673 - INFO - Tables créées avec succès
 2025-04-05 07:30:54,654 - INFO - Sauvegarde de 11040 enregistrements météo
+2025-04-05 10:51:05,712 - INFO - Tables créées avec succès
+2025-04-05 10:51:07,166 - INFO - Début de l'entraînement pour la cible : temperature_2m
+2025-04-05 10:51:07,166 - INFO - Création des variables explicatives...
+2025-04-05 10:51:07,219 - INFO - Evaluation du modèle: RMSE = 0.0000, R2 = 1.0000
+2025-04-05 10:51:07,224 - INFO - Modèle sauvegardé: model/registry/temperature_2m_model_20250405_105107.joblib
+2025-04-05 10:51:07,232 - INFO - Métadonnées du modèle sauvegardées avec ID: 1
