@@ -5,3 +5,4 @@ Ce script doit contenir l'implémentation des endpoints pour les fonctionnalité
 - Récupération des prédictions combinées avec des données réelles observées pour une période donnée
 """
 
+print("Hello world")
