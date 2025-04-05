@@ -89,6 +89,10 @@ class WeatherDB:
         if not pd.api.types.is_datetime64_any_dtype(df['time']):
             df['time'] = pd.to_datetime(df['time'])
         
+        # Supprimer les lignes avec des valeurs manquantes
+        df = df.dropna(subset=['temperature_2m', 'relativehumidity_2m'])
+
+        
         # Préparer les données pour l'insertion
         data_to_insert = []
         for _, row in df.iterrows():

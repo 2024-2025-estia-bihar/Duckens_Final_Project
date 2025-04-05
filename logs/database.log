@@ -10,3 +10,58 @@
 2025-04-05 10:51:07,219 - INFO - Evaluation du modèle: RMSE = 0.0000, R2 = 1.0000
 2025-04-05 10:51:07,224 - INFO - Modèle sauvegardé: model/registry/temperature_2m_model_20250405_105107.joblib
 2025-04-05 10:51:07,232 - INFO - Métadonnées du modèle sauvegardées avec ID: 1
+2025-04-05 11:20:00,061 - INFO - Tables créées avec succès
+2025-04-05 11:20:01,439 - INFO - Modèle chargé: model/registry/temperature_2m_model_20250405_105107.joblib
+2025-04-05 11:20:01,439 - INFO - Création des variables explicatives...
+2025-04-05 11:23:07,932 - INFO - Tables créées avec succès
+2025-04-05 11:23:09,167 - INFO - Modèle chargé: model/registry/temperature_2m_model_20250405_105107.joblib
+2025-04-05 11:23:09,167 - INFO - Création des variables explicatives...
+2025-04-05 11:54:49,682 - INFO - Tables créées avec succès
+2025-04-05 11:54:51,197 - INFO - Modèle chargé: model/registry/temperature_2m_model_20250405_105107.joblib
+2025-04-05 11:54:51,197 - INFO - Création des variables explicatives...
+2025-04-05 11:55:11,236 - INFO - Tables créées avec succès
+2025-04-05 11:55:12,723 - INFO - Modèle chargé: model/registry/temperature_2m_model_20250405_105107.joblib
+2025-04-05 11:55:12,723 - INFO - Création des variables explicatives...
+2025-04-05 12:02:55,190 - INFO - Tables créées avec succès
+2025-04-05 12:02:56,526 - INFO - Modèle chargé: model/registry/temperature_2m_model_20250405_105107.joblib
+2025-04-05 12:02:56,526 - INFO - Création des variables explicatives...
+2025-04-05 12:13:26,566 - INFO - Tables créées avec succès
+2025-04-05 12:13:28,431 - INFO - Création des variables explicatives...
+2025-04-05 12:17:05,219 - INFO - Tables créées avec succès
+2025-04-05 12:17:06,584 - INFO - Création des variables explicatives...
+2025-04-05 12:19:56,704 - INFO - Tables créées avec succès
+2025-04-05 12:19:58,057 - INFO - Création des variables explicatives...
+2025-04-05 12:57:12,719 - INFO - Tables créées avec succès
+2025-04-05 12:57:14,255 - INFO - Début de l'entraînement pour la cible : temperature_2m
+2025-04-05 12:57:14,255 - INFO - Création des variables explicatives...
+2025-04-05 12:57:14,282 - INFO - Evaluation du modèle: RMSE = 1.0564, R2 = 0.9456
+2025-04-05 12:57:14,286 - INFO - Modèle sauvegardé: model/registry/temperature_2m_model_20250405_125714.joblib
+2025-04-05 12:57:14,293 - INFO - Métadonnées du modèle sauvegardées avec ID: 2
+2025-04-05 13:01:03,941 - INFO - Tables créées avec succès
+2025-04-05 13:01:05,326 - INFO - Création des variables explicatives...
+2025-04-05 13:58:02,915 - INFO - Démarrage du pipeline de prédiction
+2025-04-05 13:58:02,925 - INFO - Tables créées avec succès
+2025-04-05 13:58:02,926 - INFO - Téléchargement des données météo du 2025-03-06 13:58:02.926748 au 2025-04-05 13:58:02.926748
+2025-04-05 13:58:03,226 - INFO - Données téléchargées avec succès: 744 enregistrements
+2025-04-05 14:04:37,497 - INFO - Démarrage du pipeline de prédiction
+2025-04-05 14:04:37,498 - INFO - Tables créées avec succès
+2025-04-05 14:04:37,498 - INFO - Téléchargement des données météo du 2025-03-06 14:04:37.498739 au 2025-04-05 14:04:37.498739
+2025-04-05 14:04:37,786 - INFO - Données téléchargées avec succès: 744 enregistrements
+2025-04-05 14:04:37,868 - INFO - Sauvegarde de 697 enregistrements météo
+2025-04-05 14:04:38,060 - INFO - Modèle chargé: model/registry/temperature_2m_model_20250405_125714.joblib
+2025-04-05 14:04:38,061 - INFO - Génération des prédictions pour 48 heures
+2025-04-05 14:04:38,061 - INFO - Création des variables explicatives...
+2025-04-05 14:04:38,343 - INFO - Prédictions générées: 48 enregistrements
+2025-04-05 14:04:38,359 - INFO - Sauvegarde de 48 prédictions pour le modèle 2
+2025-04-05 14:04:38,362 - INFO - Pipeline de prédiction terminé
+2025-04-05 14:14:21,924 - INFO - Démarrage du pipeline de prédiction
+2025-04-05 14:14:21,926 - INFO - Tables créées avec succès
+2025-04-05 14:14:21,926 - INFO - Téléchargement des données météo du 2025-03-06 14:14:21.926416 au 2025-04-05 14:14:21.926416
+2025-04-05 14:14:22,207 - INFO - Données téléchargées avec succès: 744 enregistrements
+2025-04-05 14:14:22,288 - INFO - Sauvegarde de 697 enregistrements météo
+2025-04-05 14:14:22,440 - INFO - Modèle chargé: model/registry/temperature_2m_model_20250405_125714.joblib
+2025-04-05 14:14:22,440 - INFO - Génération des prédictions pour 48 heures
+2025-04-05 14:14:22,440 - INFO - Création des variables explicatives...
+2025-04-05 14:14:22,739 - INFO - Prédictions générées: 48 enregistrements
+2025-04-05 14:14:22,753 - INFO - Sauvegarde de 48 prédictions pour le modèle 2
+2025-04-05 14:14:22,757 - INFO - Pipeline de prédiction terminé

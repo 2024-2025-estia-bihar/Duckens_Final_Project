@@ -55,28 +55,33 @@ def create_features(df):
     df = df.dropna()
     return df
 
-def train_model(df, target='temperature_2m'):
+def train_model(df, target='temperature_2m', features=None):
     """Entraîne un modèle de régression linéaire avec split temporel."""
     logging.info(f"Début de l'entraînement pour la cible : {target}")
+    
+    if features is None:
+        raise ValueError("Tu dois fournir une liste de variables explicatives (features).")
     
     # Créer les features
     data = create_features(df.copy())
 
     # Définir les variables explicatives
-    features = [
-        'relativehumidity_2m',
-        'temp_lag_1', 'temp_lag_2', 'temp_lag_3',
-        'humidity_lag_1', 'humidity_lag_2', 'humidity_lag_3',
-        'temp_rolling_mean_3', 'temp_rolling_mean_6', 'temp_rolling_mean_12',
-        'humidity_rolling_mean_3', 'humidity_rolling_mean_6', 'humidity_rolling_mean_12',
-        'hour_sin', 'hour_cos', 'day_sin', 'day_cos', 'month_sin', 'month_cos'
-    ]
+    # features = [
+    #     'relativehumidity_2m',
+    #     'temp_lag_1', 'temp_lag_2', 'temp_lag_3',
+    #     'humidity_lag_1', 'humidity_lag_2', 'humidity_lag_3',
+    #     'temp_rolling_mean_3', 'temp_rolling_mean_6', 'temp_rolling_mean_12',
+    #     'humidity_rolling_mean_3', 'humidity_rolling_mean_6', 'humidity_rolling_mean_12',
+    #     'hour_sin', 'hour_cos', 'day_sin', 'day_cos', 'month_sin', 'month_cos'
+    # ]
 
     # Supprimer les colonnes cibles des features si on prédit la température
-    if target != 'temperature_2m' and 'relativehumidity_2m' in features:
-        features.remove('relativehumidity_2m')
-        features.append('temperature_2m')
+    # if target != 'temperature_2m' and 'relativehumidity_2m' in features:
+    #     features.remove('relativehumidity_2m')
+    #     features.append('temperature_2m')
 
+    # Séparer les données en ensembles d'entraînement et de test (80% - 20%)
+    # En utilisant un split temporel
     split_idx = int(len(data) * 0.8)
     X_train = data[features].iloc[:split_idx]
     y_train = data[target].iloc[:split_idx]
@@ -142,8 +147,13 @@ if __name__ == "__main__":
         # Transformer les données pour les intervalles de 3 heures
         df_transformed = transform_to_3h_interval(df)
         
+        # Choix de la configuration "Base + Lag"
+        features = ['relativehumidity_2m'] + \
+                   [f'temp_lag_{i}' for i in range(1, 4)] + \
+                   [f'humidity_lag_{i}' for i in range(1, 4)]
+        
         # Entraîner le modèle
-        model_info = train_model(df_transformed, target='temperature_2m')
+        model_info = train_model(df_transformed, target='temperature_2m', features=features)
         
         # Sauvegarder le modèle
         path = save_model(model_info)

@@ -1,13 +1,17 @@
-# src/prediction.py
 import pandas as pd
 import numpy as np
 import logging
 from datetime import datetime, timedelta
 import requests
 from io import StringIO
+import os
+import sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from model.model_train import load_model, create_features
 from db import WeatherDB
+from data_processing import transform_to_3h_interval
+from sklearn.preprocessing import StandardScaler
 
 logging.basicConfig(
     filename='logs/prediction.log',
@@ -18,7 +22,6 @@ logging.basicConfig(
 def download_weather_data(start_date, end_date=None, location="47.262626,-1.5343945"):
     """
     Télécharge les données météo récentes depuis une API.
-    Utilisez l'API de votre choix (exemple avec Open-Meteo).
     """
     logging.info(f"Téléchargement des données météo du {start_date} au {end_date}")
     
@@ -127,30 +130,49 @@ def run_prediction_pipeline(forecast_horizon=24):
     4. Stocker les prédictions dans la base de données
     """
     logging.info("Démarrage du pipeline de prédiction")
+    print("📡 Lancement du pipeline de prédiction...")
+    
     db = WeatherDB()
     
     # 1. Télécharger les données récentes (30 jours)
+    print("📥 Téléchargement des données météo...")
     end_date = datetime.now()
     start_date = end_date - timedelta(days=30)
     
     new_data = download_weather_data(start_date, end_date)
+    
     if not new_data.empty:
+        print(f"{len(new_data)} nouvelles lignes téléchargées. Insertion en base...")
         # Sauvegarder les nouvelles données
         db.save_weather_data(new_data)
+    else:
+        print("⚠️ Aucune nouvelle donnée météo récupérée.")
     
     # 2. Obtenir toutes les données nécessaires pour les prédictions
+    print("Récupération des données complètes pour les prédictions...")
     data = db.get_weather_data(start_date=(end_date - timedelta(days=45)).strftime('%Y-%m-%d'))
     
+    # Transformation en tranches de 3 heures
+    data = transform_to_3h_interval(data)
+    
     # 3. Charger le modèle le plus récent pour la température
+    print("🔍 Chargement du dernier modèle température...")
     temp_model_info = db.get_latest_model(target='temperature_2m')
+    
     if temp_model_info:
         temp_model = load_model(temp_model_info['model_path'])
+        print(f"Modèle chargé : {temp_model_info['model_path']}")
         
         # 4. Générer les prédictions de température
+        print("🔮 Génération des prédictions température (48h)...")
         temp_predictions = generate_predictions(temp_model, data, forecast_horizon)
+        print(f"{len(temp_predictions)} prédictions générées")
         
         # 5. Sauvegarder les prédictions
         db.save_predictions(temp_model_info['id'], temp_predictions)
+        print("💾 Prédictions enregistrées dans la base.")
+    else:
+        print("❌ Aucun modèle température trouvé.")
     
     # 6. Répéter pour le modèle d'humidité si nécessaire
     humidity_model_info = db.get_latest_model(target='relativehumidity_2m')
@@ -160,6 +182,7 @@ def run_prediction_pipeline(forecast_horizon=24):
         db.save_predictions(humidity_model_info['id'], humidity_predictions)
     
     logging.info("Pipeline de prédiction terminé")
+    print("✅ Pipeline de prédiction terminé.")
     return True
 
 if __name__ == "__main__":
