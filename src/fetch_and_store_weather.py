@@ -4,8 +4,8 @@ from utils.api import get_historical_weather_data
 # Paramètres de récupération
 latitude = 48.85
 longitude = 2.35
-start_date = "2024-04-01"
-end_date = "2024-04-04"
+start_date = "2024-01-01"
+end_date = "2025-04-04"
 variables = ["temperature_2m", "relativehumidity_2m"]
 
 # Récupération depuis l’API
