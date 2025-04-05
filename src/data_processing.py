@@ -1,28 +1,46 @@
-
 import pandas as pd
+import logging
 from datetime import datetime
+
+# Configuration des logs
+logging.basicConfig(
+    filename='logs/data_processing.log',
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
 
 def transform_to_3h_interval(df):
     """
-    Regroupe les données horaires en tranches de 3 heures
+    Regroupe les données horaires en tranches de 3 heures.
+    
+    Args:
+        df (pd.DataFrame): DataFrame contenant les colonnes 'time' et les variables à regrouper.
+    
+    Returns:
+        pd.DataFrame: DataFrame regroupé en intervalles de 3 heures.
     """
-    df_copy = df.copy()
-    df_copy['hour'] = df_copy['time'].dt.hour
-    df_copy['group_3h'] = (df_copy['hour'] // 3) * 3
-    df_copy['date'] = df_copy['time'].dt.date
+    logging.info("Début de la transformation des données en intervalles de 3 heures.")
 
-    data_columns = [col for col in df_copy.columns if col not in ['time', 'hour', 'group_3h', 'date']]
-    result = []
+    # Vérification des colonnes nécessaires
+    if 'time' not in df.columns:
+        logging.error("La colonne 'time' est manquante dans le DataFrame.")
+        raise ValueError("La colonne 'time' est requise pour la transformation.")
 
-    for date, date_group in df_copy.groupby('date'):
-        for group_3h, hour_group in date_group.groupby('group_3h'):
-            entry = {
-                'time': datetime.combine(date, datetime.min.time()) + pd.Timedelta(hours=group_3h)
-            }
-            for col in data_columns:
-                entry[col] = round(hour_group[col].mean(), 1)
-            result.append(entry)
+    # Vérification du type de la colonne 'time'
+    if not pd.api.types.is_datetime64_any_dtype(df['time']):
+        logging.info("Conversion de la colonne 'time' en type datetime.")
+        df['time'] = pd.to_datetime(df['time'])
 
-    df_3h = pd.DataFrame(result)
-    df_3h = df_3h.sort_values('time')
-    return df_3h
+    # Ajout des colonnes nécessaires pour le regroupement
+    df['group_3h'] = (df['time'].dt.hour // 3) * 3
+    df['time_3h'] = df['time'].dt.floor('3H')
+
+    # Regroupement par tranches de 3 heures
+    grouped_df = df.groupby('time_3h').mean().reset_index()
+
+    # Arrondir les valeurs numériques à une décimale
+    numeric_columns = grouped_df.select_dtypes(include=['float', 'int']).columns
+    grouped_df[numeric_columns] = grouped_df[numeric_columns].round(1)
+
+    logging.info(f"Transformation terminée : {len(grouped_df)} lignes générées.")
+    return grouped_df
