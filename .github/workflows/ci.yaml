@@ -59,7 +59,7 @@ jobs:
         uses: docker/login-action@v2
         with:
           registry: ghcr.io
-          username: ${{ github.actor }}
+          username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
           
       - name: Build and push Docker image
@@ -73,21 +73,37 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-  test-container:
-    needs: build-and-push
+  test-api:
+    needs: test
     runs-on: ubuntu-latest
     if: success() && github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
     steps:
-      - name: Pull Docker image
-        run: docker pull ghcr.io/${{ github.repository_owner }}/weather-api:${{ github.sha }}
+      - name: Checkout code
+        uses: actions/checkout@v3
         
-      - name: Run Docker container
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+          
+      - name: Install dependencies
         run: |
-          docker run -d -p 8000:8000 --name weather-api ghcr.io/${{ github.repository_owner }}/weather-api:${{ github.sha }}
-          sleep 15  # Attendre que le conteneur démarre
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          
+      - name: Create directories
+        run: |
+          mkdir -p data/db
+          mkdir -p logs/plots
+          mkdir -p model/registry
+          
+      - name: Run API in background
+        run: |
+          nohup uvicorn api.main:app --host 0.0.0.0 --port 8000 &
+          sleep 10  # Attendre que l'API démarre
           
       - name: Test API endpoints
         run: |
           curl -f http://localhost:8000/health || exit 1
           curl -f http://localhost:8000/version || exit 1
-          echo "Container tests passed!"
+          echo "API tests passed!"
