@@ -975,3 +975,5 @@
 2025-04-06 06:23:44,677 - INFO - Transformation terminée : 3720 lignes générées.
 2025-04-06 06:23:44,678 - INFO - Création des variables explicatives avancées...
 2025-04-06 06:23:44,717 - INFO - Variables explicatives créées avec succès : 55 colonnes, 3673 lignes
+2025-04-06 15:28:10,692 - INFO - Tables et index créés avec succès
+2025-04-06 15:28:10,783 - INFO - Tables et index créés avec succès
