@@ -7,3 +7,5 @@ matplotlib==3.7.1
 joblib==1.2.0
 requests==2.29.0
 python-dotenv==1.0.0
+pytest==8.3.5
+httpx==0.25.0

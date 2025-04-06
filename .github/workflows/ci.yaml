@@ -2,9 +2,9 @@ name: Weather Prediction CI/CD Pipeline
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main, master ]
   pull_request:
-    branches: [ master ]
+    branches: [ main, master ]
 
 jobs:
   test:
@@ -30,14 +30,21 @@ jobs:
           mkdir -p logs/plots
           mkdir -p model/registry
           
-      - name: Run tests
+      - name: Debug info
         run: |
-          pytest tests/
+          pwd
+          ls -la
+          python --version
+          pip list
+          
+      - name: Run tests with verbose output
+        run: |
+          python -m pytest tests/ -v
 
   build-and-push:
     needs: test
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+    if: success() && github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
     permissions:
       contents: read
       packages: write
@@ -55,40 +62,29 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
           
-      - name: Extract metadata
-        id: meta
-        uses: docker/metadata-action@v4
-        with:
-          images: ghcr.io/${{ github.repository_owner }}/weather-api
-          tags: |
-            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master' }}
-            type=sha,format=short
-            type=ref,event=branch
-            
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
         with:
           context: .
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/weather-api:latest
+            ghcr.io/${{ github.repository_owner }}/weather-api:${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
   test-container:
     needs: build-and-push
     runs-on: ubuntu-latest
+    if: success() && github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-        
       - name: Pull Docker image
-        run: docker pull ghcr.io/${{ github.repository_owner }}/weather-api:sha-${{ github.sha }}
+        run: docker pull ghcr.io/${{ github.repository_owner }}/weather-api:${{ github.sha }}
         
       - name: Run Docker container
         run: |
-          docker run -d -p 8000:8000 --name weather-api ghcr.io/${{ github.repository_owner }}/weather-api:sha-${{ github.sha }}
-          sleep 10  # Attendre que le conteneur démarre
+          docker run -d -p 8000:8000 --name weather-api ghcr.io/${{ github.repository_owner }}/weather-api:${{ github.sha }}
+          sleep 15  # Attendre que le conteneur démarre
           
       - name: Test API endpoints
         run: |
