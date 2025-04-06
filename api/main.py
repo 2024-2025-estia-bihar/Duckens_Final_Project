@@ -17,10 +17,16 @@ from src.prediction import run_prediction_pipeline
 # Configuration des logs
 os.makedirs('logs', exist_ok=True)
 logging.basicConfig(
-    filename='logs/api.log',
     level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s'
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler('logs/api.log'),
+        logging.StreamHandler()
+    ]
 )
+
+# Définir la version globale de l'API
+API_VERSION = "1.0.0"
 
 # Modèles de données Pydantic
 class WeatherData(BaseModel):
@@ -60,9 +66,13 @@ app = FastAPI(
     - Générer des prédictions météorologiques
     - Visualiser les performances des modèles
     
-    Développé par: [Jean Duckens SANNON]
+    ## Fonctionnalités système
+    - `/health` : Vérifier l'état du système
+    - `/version` : Obtenir la version actuelle du logiciel
+    
+    Développé par: Jean Duckens SANNON
     """,
-    version="1.0.0",
+    version=API_VERSION,
     docs_url="/docs",
     redoc_url="/redoc"
 )
@@ -118,6 +128,7 @@ def get_historical_data(
     
     Les données peuvent être filtrées par période et limitées en nombre.
     """
+    logging.info(f"Endpoint /weather/historical/ appelé avec start_date={start_date}, end_date={end_date}, limit={limit}")
     try:
         data = db.get_weather_data(start_date=start_date, end_date=end_date, limit=limit)
         if data.empty:
@@ -150,6 +161,7 @@ def get_weather_stats(
     
     Les statistiques incluent minimum, maximum, moyenne, écart-type et quartiles.
     """
+    logging.info(f"Endpoint /weather/stats/ appelé avec start_date={start_date}, end_date={end_date}")
     try:
         data = db.get_weather_data(start_date=start_date, end_date=end_date)
         if data.empty:
@@ -195,6 +207,7 @@ def get_models(db: WeatherDB = Depends(get_db)):
     """
     Récupère la liste des modèles de prédiction enregistrés dans la base de données.
     """
+    logging.info("Endpoint /models/ appelé pour récupérer la liste des modèles")
     try:
         with db.connect() as conn:
             models_df = pd.read_sql_query(
@@ -236,6 +249,7 @@ def get_model_details(
     """
     Récupère les détails complets d'un modèle spécifique.
     """
+    logging.info(f"Endpoint /models/ appelé avec selection du modèle ID={model_id}")
     try:
         with db.connect() as conn:
             model_df = pd.read_sql_query(
@@ -279,6 +293,7 @@ def run_predictions(
     effectue des prédictions basées sur le modèle le plus récent,
     et stocke les résultats dans la base de données.
     """
+    logging.info(f"Endpoint /predictions/run/ appelé avec forecast_horizon={forecast_horizon}, force={force}")
     try:
         if not force:
             # Vérifier si des prédictions récentes existent déjà
@@ -334,6 +349,7 @@ def get_predictions(
     
     Les prédictions peuvent être filtrées par période et par cible.
     """
+    logging.info(f"Endpoint /predictions/ appelé avec start_date={start_date}, end_date={end_date}, target={target}, limit={limit}")
     try:
         # Modifier la fonction get_predictions dans db.py pour supporter le filtrage par target
         # Pour l'instant, gestion côté API
@@ -381,6 +397,7 @@ def get_latest_predictions(
     
     Endpoint pratique pour les applications d'affichage de la météo.
     """
+    logging.info(f"Endpoint /predictions/latest/ appelé avec hours={hours}, target={target}")
     try:
         # Obtenir les prédictions récentes
         now = datetime.now()
@@ -448,6 +465,7 @@ def health_check(db: WeatherDB = Depends(get_db)):
         "timestamp": datetime.now().strftime('%Y-%m-%dT%H:%M:%S')
     }
     
+    logging.info("Endpoint /health appelé")
     # Vérifier la base de données
     try:
         with db.connect() as conn:
@@ -471,6 +489,20 @@ def health_check(db: WeatherDB = Depends(get_db)):
         "message": "Contrôle de santé effectué",
         "data": health
     }
+
+@app.get("/version", tags=["Système"])
+def get_version():
+    """
+    Renvoie la version actuelle de l'API.
+    
+    Ce endpoint permet aux clients de connaître la version du logiciel en cours d'exécution,
+    facilitant ainsi la gestion des compatibilités et des mises à jour.
+    
+    Returns:
+        dict: Un dictionnaire contenant la version de l'API
+    """
+    logging.info("Endpoint /version appelé")
+    return {"version": API_VERSION}
 
 if __name__ == "__main__":
     import uvicorn
