@@ -1,36 +1,4 @@
-Système de Prédiction Météorologique
-Un système complet de prédiction météo qui utilise l'apprentissage automatique pour prédire la température et l'humidité relative, avec une API RESTful pour accéder aux prédictions.
-
-Table des matières
-Architecture
-Installation
-Utilisation
-API Endpoints
-Tests
-Docker
-CI/CD
-Structure du projet
-
-Architecture
-Ce projet utilise une architecture modulaire avec plusieurs composants clés :
-
-┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
-│  Data Pipeline  │────>│  Model Training │────>│ Model Registry  │
-└────────┬────────┘     └─────────────────┘     └────────┬────────┘
-         │                                               │
-         v                                               v
-┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
-│  Database (SQLite) │<────│  API (FastAPI)  │<────│ Prediction Engine │
-└─────────────────┘     └─────────────────┘     └─────────────────┘
-
-Data Pipeline: Récupération et prétraitement des données météorologiques
-Model Training: Entraînement périodique des modèles ML avec optimisation
-Model Registry: Stockage et versionnement des modèles entraînés
-Database: Stockage persistant des données et prédictions (SQLite)
-Prediction Engine: Génération des prédictions météorologiques
-API: Interface RESTful pour accéder aux données et prédictions
-
-# Système de Prédiction Météorologique
+# Projet de Système de Prédiction Météorologique
 
 Un système complet de prédiction météo qui utilise l'apprentissage automatique pour prédire la température et l'humidité relative, avec une API RESTful pour accéder aux prédictions.
 
